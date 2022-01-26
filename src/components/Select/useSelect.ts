@@ -20,6 +20,12 @@ const Select = (config: Config) => {
     }
   }, [value, onChange]);
 
+  const selectOption = (option: Option) => {
+    setValue(option);
+
+    if (search) setSearch('');
+  };
+
   const clearValue = () => {
     if (search) {
       setSearch('');
@@ -33,7 +39,7 @@ const Select = (config: Config) => {
     search,
     onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => setSearch(event.target.value),
     clearValue,
-    selectOption: (option: Option) => setValue(option),
+    selectOption,
   };
 };
 
