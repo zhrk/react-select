@@ -20,10 +20,19 @@ const Select = (config: Config) => {
     }
   }, [value, onChange]);
 
+  const clearValue = () => {
+    if (search) {
+      setSearch('');
+    } else {
+      setValue(null);
+    }
+  };
+
   return {
     options: search ? matchSorter(options, search, { keys: ['label'] }) : options,
+    search,
     onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => setSearch(event.target.value),
-    clearValue: () => setValue(null),
+    clearValue,
     selectOption: (option: Option) => setValue(option),
   };
 };
