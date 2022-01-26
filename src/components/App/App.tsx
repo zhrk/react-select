@@ -15,6 +15,14 @@ const options = [
     value: 'kiwi',
     label: 'Kiwi 🥝',
   },
+  {
+    value: 'orange',
+    label: 'Orange 🍊',
+  },
+  {
+    value: 'lemon',
+    label: 'Lemon 🍋',
+  },
 ];
 
 const App = () => {
