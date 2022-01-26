@@ -10,12 +10,12 @@ interface Props {
 const Select = (props: Props) => {
   const { ...config } = props;
 
-  const { options, selectOption, clearValue } = useSelect(config);
+  const { options, selectOption, clearValue, onInputChange } = useSelect(config);
 
   return (
     <div className={styles.container}>
       <div className={styles.input}>
-        <input type="text" />
+        <input onChange={onInputChange} type="text" />
         <button type="button" onClick={clearValue}>
           x
         </button>

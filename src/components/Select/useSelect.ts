@@ -1,3 +1,4 @@
+import { matchSorter } from 'match-sorter';
 import { useState, useEffect } from 'react';
 import { Options, Option, Value } from './types';
 
@@ -11,6 +12,8 @@ const Select = (config: Config) => {
 
   const [value, setValue] = useState<Value>(null);
 
+  const [search, setSearch] = useState('');
+
   useEffect(() => {
     if (onChange) {
       onChange(value);
@@ -18,7 +21,8 @@ const Select = (config: Config) => {
   }, [value, onChange]);
 
   return {
-    options,
+    options: search ? matchSorter(options, search, { keys: ['label'] }) : options,
+    onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => setSearch(event.target.value),
     clearValue: () => setValue(null),
     selectOption: (option: Option) => setValue(option),
   };
