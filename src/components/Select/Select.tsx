@@ -1,30 +1,22 @@
-import { useState, useEffect } from 'react';
 import styles from './styles.module.scss';
-
-type Option = { value: string; label: string };
-type Options = Option[];
+import { Options, Value } from './types';
+import useSelect from './useSelect';
 
 interface Props {
   options: Options;
-  onChange?: (value: Option | null) => void;
+  onChange?: (value: Value) => void;
 }
 
 const Select = (props: Props) => {
-  const { options, onChange } = props;
+  const { ...config } = props;
 
-  const [value, setValue] = useState<Option | null>(null);
-
-  useEffect(() => {
-    if (onChange) {
-      onChange(value);
-    }
-  }, [value, onChange]);
+  const { options, selectOption } = useSelect(config);
 
   return (
     <div className={styles.container}>
       <input type="text" />
       {options.map((option) => (
-        <button key={option.value} type="button" onClick={() => setValue(option)}>
+        <button key={option.value} type="button" onClick={() => selectOption(option)}>
           {option.label}
         </button>
       ))}
