@@ -19,6 +19,7 @@ const Select = (config: Config) => {
 
   return {
     options,
+    clearValue: () => setValue(null),
     selectOption: (option: Option) => setValue(option),
   };
 };

@@ -10,16 +10,23 @@ interface Props {
 const Select = (props: Props) => {
   const { ...config } = props;
 
-  const { options, selectOption } = useSelect(config);
+  const { options, selectOption, clearValue } = useSelect(config);
 
   return (
     <div className={styles.container}>
-      <input type="text" />
-      {options.map((option) => (
-        <button key={option.value} type="button" onClick={() => selectOption(option)}>
-          {option.label}
+      <div className={styles.input}>
+        <input type="text" />
+        <button type="button" onClick={clearValue}>
+          x
         </button>
-      ))}
+      </div>
+      <div className={styles.options}>
+        {options.map((option) => (
+          <button key={option.value} type="button" onClick={() => selectOption(option)}>
+            {option.label}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };
