@@ -14,6 +14,8 @@ const Select = (config: Config) => {
 
   const [search, setSearch] = useState('');
 
+  const [visible, setVisible] = useState(false);
+
   useEffect(() => {
     if (onChange) {
       onChange(value);
@@ -35,9 +37,11 @@ const Select = (config: Config) => {
   };
 
   return {
+    visible,
     options: search ? matchSorter(options, search, { keys: ['label'] }) : options,
     search,
     onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => setSearch(event.target.value),
+    onInputFocus: () => setVisible(true), // вынести всё что относится к инпуту в отдельный объект
     clearValue,
     selectOption,
   };
