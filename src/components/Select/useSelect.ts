@@ -59,11 +59,14 @@ const Select = (config: Config) => {
   return {
     visible,
     options: search ? matchSorter(options, search, { keys: ['label'] }) : options,
-    search,
-    onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => setSearch(event.target.value),
-    onInputFocus: () => setVisible(true), // вынести всё что относится к инпуту в отдельный объект
     clearValue,
     selectOption,
+    inputProps: {
+      type: 'text',
+      value: search,
+      onChange: (event: React.ChangeEvent<HTMLInputElement>) => setSearch(event.target.value),
+      onFocus: () => setVisible(true),
+    },
     optionsProps: {
       ref,
       role: 'listbox',
@@ -73,10 +76,10 @@ const Select = (config: Config) => {
     optionProps: {
       role: 'option',
       'aria-selected': false,
-      onFocus: (event: React.FocusEvent) => {
+      onFocus: (event: React.FocusEvent<HTMLButtonElement>) => {
         event.target.ariaSelected = 'true';
       },
-      onBlur: (event: React.FocusEvent) => {
+      onBlur: (event: React.FocusEvent<HTMLButtonElement>) => {
         event.target.ariaSelected = 'false';
       },
     },
