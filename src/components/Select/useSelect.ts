@@ -38,9 +38,11 @@ const Select = (config: Config) => {
 
   const ref = useRef<HTMLDivElement>(null);
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (ref.current) {
-      const elements = Array.from(ref.current.children) as Array<HTMLButtonElement>;
+  const getOptionsElements = () => {
+    const element = ref.current;
+
+    if (element) {
+      const elements = Array.from(element.children) as Array<HTMLButtonElement>;
 
       const firstElement = elements[0];
       const lastElement = elements[elements.length - 1];
@@ -49,10 +51,31 @@ const Select = (config: Config) => {
       const prevOption = focusedElement?.previousSibling as SiblingElement;
       const nextOption = focusedElement?.nextSibling as SiblingElement;
 
-      if (event.key === 'ArrowUp') prevOption?.focus();
-      if (event.key === 'ArrowDown') nextOption?.focus();
-      if (event.key === 'Home') firstElement?.focus();
-      if (event.key === 'End') lastElement?.focus();
+      return {
+        firstElement,
+        lastElement,
+        prevOption,
+        nextOption,
+      };
+    }
+
+    return {};
+  };
+
+  const handleOptionKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const { firstElement, lastElement, prevOption, nextOption } = getOptionsElements();
+
+    if (event.key === 'ArrowUp') prevOption?.focus();
+    if (event.key === 'ArrowDown') nextOption?.focus();
+    if (event.key === 'Home') firstElement?.focus();
+    if (event.key === 'End') lastElement?.focus();
+  };
+
+  const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const { firstElement } = getOptionsElements();
+
+    if (event.key === 'ArrowDown') {
+      firstElement?.focus();
     }
   };
 
@@ -66,12 +89,13 @@ const Select = (config: Config) => {
       value: search,
       onChange: (event: React.ChangeEvent<HTMLInputElement>) => setSearch(event.target.value),
       onFocus: () => setVisible(true),
+      onKeyDown: handleInputKeyDown,
     },
     optionsProps: {
       ref,
       role: 'listbox',
       tabIndex: -1,
-      onKeyDown: handleKeyDown,
+      onKeyDown: handleOptionKeyDown,
     },
     optionProps: {
       role: 'option',
