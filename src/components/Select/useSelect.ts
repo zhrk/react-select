@@ -24,8 +24,8 @@ const useSelect = (config: Config) => {
 
   const selectOption = (option: Option) => {
     setValue(option);
-
-    if (search) setSearch('');
+    setVisible(false);
+    setSearch('');
   };
 
   const clearValue = () => {
