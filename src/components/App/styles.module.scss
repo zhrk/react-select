@@ -1,4 +1,11 @@
 .container {
+  display: flex;
+  column-gap: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.selectContainer {
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -9,7 +16,7 @@
   position: relative;
 }
 
-.fruit {
+.value {
   top: -100px;
   left: 0;
   right: 0;
