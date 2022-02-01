@@ -7,7 +7,7 @@ interface Config {
   onChange?: (value: Value) => void;
 }
 
-const Select = (config: Config) => {
+const useSelect = (config: Config) => {
   const { options, onChange } = config;
 
   const [value, setValue] = useState<Value>(null);
@@ -110,4 +110,4 @@ const Select = (config: Config) => {
   };
 };
 
-export default Select;
+export default useSelect;
