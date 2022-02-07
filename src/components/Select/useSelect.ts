@@ -4,12 +4,13 @@ import { Options, Option, Value } from './types';
 import useSelectAccessibility from './useSelectAccessibility';
 
 interface Config {
-  options: Options;
+  options?: Options;
   onChange?: (value: Value) => void;
+  getOptions?: (urlParams: { search: string }) => Promise<Options>;
 }
 
 const useSelect = (config: Config) => {
-  const { options, onChange } = config;
+  const { onChange, getOptions } = config;
 
   const [value, setValue] = useState<Value>(null);
 
@@ -19,11 +20,19 @@ const useSelect = (config: Config) => {
 
   const { ref, handleOptionKeyDown, handleInputKeyDown } = useSelectAccessibility();
 
+  const [options, setOptions] = useState<Options>(config.options || []);
+
   useEffect(() => {
     if (onChange) {
       onChange(value);
     }
   }, [value, onChange]);
+
+  useEffect(() => {
+    if (getOptions && visible) {
+      getOptions({ search }).then((response) => setOptions(response));
+    }
+  }, [visible, search, getOptions, setOptions]);
 
   const selectOption = (option: Option) => {
     setValue(option);
@@ -41,7 +50,7 @@ const useSelect = (config: Config) => {
 
   return {
     visible,
-    options: search ? matchSorter(options, search, { keys: ['label'] }) : options,
+    options: getOptions ? options : matchSorter(options, search, { keys: ['label'] }),
     clearValue,
     selectOption,
     inputProps: {

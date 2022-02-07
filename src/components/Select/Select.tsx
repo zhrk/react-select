@@ -3,8 +3,9 @@ import { Options, Value } from './types';
 import useSelect from './useSelect';
 
 interface Props {
-  options: Options;
+  options?: Options;
   onChange?: (value: Value) => void;
+  getOptions?: (urlParams: { search: string }) => Promise<Options>;
 }
 
 const Select = (props: Props) => {

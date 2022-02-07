@@ -1,8 +1,18 @@
+import axios from 'axios';
 import { useState } from 'react';
 import Select from '../Select';
 import MultiSelect from '../Select/MultiSelect';
 import { Value, Options } from '../Select/types';
+import DTO from '../../types/DTO';
 import styles from './styles.module.scss';
+
+const loadUsers = async (params?: Record<string, string>) => {
+  const url = 'https://jsonplaceholder.typicode.com/users';
+
+  const response = await axios.get<DTO[]>(url, { params });
+
+  return response;
+};
 
 const options = [
   {
@@ -34,7 +44,17 @@ const SelectExample = () => {
     <div className={styles.selectContainer}>
       <div className={styles.select}>
         {fruit && <div className={styles.value}>{`Selected fruit: ${fruit.label}`}</div>}
-        <Select options={options} onChange={(value) => setFruit(value)} />
+        <Select
+          getOptions={async ({ search }) => {
+            const response = await loadUsers(search ? { username_like: search } : {});
+
+            const users = response.data.map((item) => ({ value: item.id, label: item.username }));
+
+            return users;
+          }}
+          options={options}
+          onChange={(value) => setFruit(value)}
+        />
       </div>
     </div>
   );
