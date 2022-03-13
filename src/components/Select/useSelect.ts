@@ -1,12 +1,12 @@
 import { matchSorter } from 'match-sorter';
 import { useState, useEffect } from 'react';
-import { Options, Option, Value } from './types';
+import { Options, Option, Value, OnChange, GetOptions } from './types';
 import useSelectAccessibility from './useSelectAccessibility';
 
 interface Config {
   options?: Options;
-  onChange?: (value: Value) => void;
-  getOptions?: (urlParams: { search: string }) => Promise<Options>;
+  onChange?: OnChange;
+  getOptions?: GetOptions;
 }
 
 const useSelect = (config: Config) => {
@@ -22,6 +22,8 @@ const useSelect = (config: Config) => {
 
   const [options, setOptions] = useState<Options>(config.options || []);
 
+  const [scrollToBottomCount, setScrollToBottomCount] = useState(0);
+
   useEffect(() => {
     if (onChange) {
       onChange(value);
@@ -30,9 +32,11 @@ const useSelect = (config: Config) => {
 
   useEffect(() => {
     if (getOptions && visible) {
-      getOptions({ search }).then((response) => setOptions(response));
+      getOptions({ search, scrollToBottomCount }).then((response) => {
+        setOptions((prev) => [...prev, ...response]);
+      });
     }
-  }, [visible, search, getOptions, setOptions]);
+  }, [visible, search, scrollToBottomCount, getOptions, setOptions]);
 
   const selectOption = (option: Option) => {
     setValue(option);
@@ -45,6 +49,17 @@ const useSelect = (config: Config) => {
       setSearch('');
     } else {
       setValue(null);
+    }
+  };
+
+  const handleScroll = () => {
+    if (ref.current) {
+      const curr = ref.current.scrollTop + ref.current.clientHeight;
+      const height = ref.current.scrollHeight;
+
+      if (curr === height) {
+        setScrollToBottomCount((prev) => prev + 1);
+      }
     }
   };
 
@@ -65,6 +80,7 @@ const useSelect = (config: Config) => {
       role: 'listbox',
       tabIndex: -1,
       onKeyDown: handleOptionKeyDown,
+      onScroll: handleScroll,
     },
     optionProps: {
       role: 'option',

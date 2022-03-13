@@ -7,7 +7,7 @@ import DTO from '../../types/DTO';
 import styles from './styles.module.scss';
 
 const loadUsers = async (params?: Record<string, string>) => {
-  const url = 'https://jsonplaceholder.typicode.com/users';
+  const url = 'https://jsonplaceholder.typicode.com/comments';
 
   const response = await axios.get<DTO[]>(url, { params });
 
@@ -45,14 +45,18 @@ const SelectExample = () => {
       <div className={styles.select}>
         {fruit && <div className={styles.value}>{`Selected fruit: ${fruit.label}`}</div>}
         <Select
-          getOptions={async ({ search }) => {
-            const response = await loadUsers(search ? { username_like: search } : {});
+          getOptions={async ({ search, scrollToBottomCount }) => {
+            const response = await loadUsers({
+              _page: String(scrollToBottomCount + 1),
+              _limit: String(10),
+              email_like: search,
+            });
 
-            const users = response.data.map((item) => ({ value: item.id, label: item.username }));
+            const users = response.data.map((item) => ({ value: item.id, label: item.email }));
 
             return users;
           }}
-          options={options}
+          /* options={options} */
           onChange={(value) => setFruit(value)}
         />
       </div>

@@ -1,11 +1,11 @@
 import styles from './styles.module.scss';
-import { Options, Value } from './types';
+import { Options, OnChange, GetOptions } from './types';
 import useSelect from './useSelect';
 
 interface Props {
   options?: Options;
-  onChange?: (value: Value) => void;
-  getOptions?: (urlParams: { search: string }) => Promise<Options>;
+  onChange?: OnChange;
+  getOptions?: GetOptions;
 }
 
 const Select = (props: Props) => {
