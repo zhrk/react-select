@@ -8,5 +8,6 @@ export type Options = Option[];
 export type Value = Option | null;
 
 export type OnChange = (value: Value) => void;
+export type OnMultiChange = (value: Options | []) => void;
 
 export type GetOptions = (meta: Meta) => Promise<Options>;

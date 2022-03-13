@@ -1,15 +1,16 @@
 import { matchSorter } from 'match-sorter';
 import { useState, useEffect } from 'react';
-import { Options, Option } from './types';
+import { Options, Option, OnMultiChange, GetOptions } from './types';
 import useSelectAccessibility from './useSelectAccessibility';
 
 interface Config {
-  options: Options;
-  onChange?: (value: Options) => void;
+  options?: Options;
+  onChange?: OnMultiChange;
+  getOptions?: GetOptions;
 }
 
 const useMultiSelect = (config: Config) => {
-  const { options, onChange } = config;
+  const { onChange, getOptions } = config;
 
   const [values, setValue] = useState<Options>([]);
 
@@ -19,11 +20,23 @@ const useMultiSelect = (config: Config) => {
 
   const { ref, handleOptionKeyDown, handleInputKeyDown } = useSelectAccessibility();
 
+  const [options, setOptions] = useState<Options>(config.options || []);
+
+  const [scrollToBottomCount, setScrollToBottomCount] = useState(0);
+
   useEffect(() => {
     if (onChange) {
       onChange(values);
     }
   }, [values, onChange]);
+
+  useEffect(() => {
+    if (getOptions && visible) {
+      getOptions({ search, scrollToBottomCount }).then((response) => {
+        setOptions((prev) => [...prev, ...response]);
+      });
+    }
+  }, [visible, search, scrollToBottomCount, getOptions, setOptions]);
 
   const selectOption = (option: Option) => {
     const selectedValues = values.map((value) => value.value);
@@ -45,9 +58,20 @@ const useMultiSelect = (config: Config) => {
     }
   };
 
+  const handleScroll = () => {
+    if (ref.current) {
+      const curr = ref.current.scrollTop + ref.current.clientHeight;
+      const height = ref.current.scrollHeight;
+
+      if (curr === height) {
+        setScrollToBottomCount((prev) => prev + 1);
+      }
+    }
+  };
+
   return {
     visible,
-    options: search ? matchSorter(options, search, { keys: ['label'] }) : options,
+    options: getOptions ? options : matchSorter(options, search, { keys: ['label'] }),
     clearValue,
     selectOption,
     inputProps: {
@@ -62,6 +86,7 @@ const useMultiSelect = (config: Config) => {
       role: 'listbox',
       tabIndex: -1,
       onKeyDown: handleOptionKeyDown,
+      onScroll: handleScroll,
     },
     optionProps: {
       role: 'option',

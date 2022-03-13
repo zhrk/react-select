@@ -1,10 +1,11 @@
 import styles from './styles.module.scss';
-import { Options } from './types';
+import { Options, OnMultiChange, GetOptions } from './types';
 import useMultiSelect from './useMultiSelect';
 
 interface Props {
-  options: Options;
-  onChange?: (value: Options) => void;
+  options?: Options;
+  onChange?: OnMultiChange;
+  getOptions?: GetOptions;
 }
 
 const MultiSelect = (props: Props) => {

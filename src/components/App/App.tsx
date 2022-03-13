@@ -75,7 +75,21 @@ const MultiSelectExample = () => {
         {selectedFruits && (
           <div className={styles.value}>{`Selected fruits: ${selectedFruits}`}</div>
         )}
-        <MultiSelect options={options} onChange={(value) => setFruits(value)} />
+        <MultiSelect
+          /* getOptions={async ({ search, scrollToBottomCount }) => {
+            const response = await loadUsers({
+              _page: String(scrollToBottomCount + 1),
+              _limit: String(10),
+              email_like: search,
+            });
+
+            const users = response.data.map((item) => ({ value: item.id, label: item.email }));
+
+            return users;
+          }} */
+          options={options}
+          onChange={(value) => setFruits(value)}
+        />
       </div>
     </div>
   );
