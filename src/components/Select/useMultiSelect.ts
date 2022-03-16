@@ -13,7 +13,7 @@ const useMultiSelect = (config: Config) => {
 
   const [values, setValue] = useState<Options>([]);
 
-  const { visible, hideOptions, clearSearch, ...rest } = useSelectCommon({
+  const { visible, clearSearch, ...rest } = useSelectCommon({
     getOptions,
     options,
   });
@@ -33,7 +33,6 @@ const useMultiSelect = (config: Config) => {
       setValue([...values, option]);
     }
 
-    hideOptions();
     clearSearch();
   };
 
