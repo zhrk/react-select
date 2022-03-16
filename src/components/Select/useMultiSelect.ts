@@ -13,10 +13,9 @@ const useMultiSelect = (config: Config) => {
 
   const [values, setValue] = useState<Options>([]);
 
-  const { visible, clearSearch, ...rest } = useSelectCommon({
-    getOptions,
-    options,
-  });
+  const selectProps = useSelectCommon({ getOptions, options });
+
+  const { clearSearch } = selectProps;
 
   useEffect(() => {
     if (onChange) {
@@ -42,10 +41,9 @@ const useMultiSelect = (config: Config) => {
   };
 
   return {
-    visible,
     clearValue,
     selectOption,
-    ...rest,
+    ...selectProps,
   };
 };
 

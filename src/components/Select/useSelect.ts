@@ -13,10 +13,9 @@ const useSelect = (config: Config) => {
 
   const [value, setValue] = useState<Value>(null);
 
-  const { visible, hideOptions, clearSearch, ...rest } = useSelectCommon({
-    getOptions,
-    options,
-  });
+  const selectProps = useSelectCommon({ getOptions, options });
+
+  const { hideOptions, clearSearch } = selectProps;
 
   useEffect(() => {
     if (onChange) {
@@ -36,10 +35,9 @@ const useSelect = (config: Config) => {
   };
 
   return {
-    visible,
     clearValue,
     selectOption,
-    ...rest,
+    ...selectProps,
   };
 };
 

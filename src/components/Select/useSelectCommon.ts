@@ -24,15 +24,23 @@ const useSelectOptions = (config: Config) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (getOptions && visible) {
-      setIsLoading(true);
+    const onEffect = async () => {
+      if (visible && getOptions) {
+        setIsLoading(true);
 
-      getOptions({ search, scrollToBottomCount }).then((response) => {
+        const response = await getOptions({ search, scrollToBottomCount });
+
         setOptions((prev) => [...prev, ...response]);
         setIsLoading(false);
-      });
-    }
+      }
+    };
+
+    onEffect();
   }, [visible, search, scrollToBottomCount, getOptions, setOptions]);
+
+  useEffect(() => {
+    if (getOptions && !visible) setOptions([]);
+  }, [visible, getOptions]);
 
   const handleScroll = () => {
     if (ref.current) {
