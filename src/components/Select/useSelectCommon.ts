@@ -21,10 +21,15 @@ const useSelectOptions = (config: Config) => {
 
   const [scrollToBottomCount, setScrollToBottomCount] = useState(0);
 
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     if (getOptions && visible) {
+      setIsLoading(true);
+
       getOptions({ search, scrollToBottomCount }).then((response) => {
         setOptions((prev) => [...prev, ...response]);
+        setIsLoading(false);
       });
     }
   }, [visible, search, scrollToBottomCount, getOptions, setOptions]);
@@ -67,6 +72,7 @@ const useSelectOptions = (config: Config) => {
       onKeyDown: handleInputKeyDown,
     },
     visible,
+    isLoading,
     clearSearch: () => setSearch(''),
     hideOptions: () => setVisible(false),
   };

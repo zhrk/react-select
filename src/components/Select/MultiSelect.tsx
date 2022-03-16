@@ -11,8 +11,16 @@ interface Props {
 const MultiSelect = (props: Props) => {
   const { ...config } = props;
 
-  const { options, visible, selectOption, clearValue, inputProps, optionProps, optionsProps } =
-    useMultiSelect(config);
+  const {
+    options,
+    visible,
+    selectOption,
+    clearValue,
+    inputProps,
+    optionProps,
+    optionsProps,
+    isLoading,
+  } = useMultiSelect(config);
 
   return (
     <div className={styles.container}>
@@ -22,6 +30,7 @@ const MultiSelect = (props: Props) => {
           x
         </button>
       </div>
+      {isLoading && 'Loading...'}
       {visible && (
         <div className={styles.options} {...optionsProps}>
           {options.map((option) => (

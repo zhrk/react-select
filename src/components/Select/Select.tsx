@@ -11,8 +11,16 @@ interface Props {
 const Select = (props: Props) => {
   const { ...config } = props;
 
-  const { options, visible, selectOption, clearValue, inputProps, optionProps, optionsProps } =
-    useSelect(config);
+  const {
+    options,
+    visible,
+    selectOption,
+    clearValue,
+    inputProps,
+    optionProps,
+    optionsProps,
+    isLoading,
+  } = useSelect(config);
 
   return (
     <div className={styles.container}>
@@ -22,6 +30,7 @@ const Select = (props: Props) => {
           x
         </button>
       </div>
+      {isLoading && 'Loading...'}
       {visible && (
         <div className={styles.options} {...optionsProps}>
           {options.map((option) => (
