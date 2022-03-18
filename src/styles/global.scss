@@ -1,14 +1,18 @@
 :root {
   --white: #fff;
-  --bg: #0d1117;
-  --text: #8b949e;
-  --blue: #58a6ff;
+  --black: #000;
+
+  --dark_100: #101010;
+  --dark_200: #141414;
+  --dark_300: #161616;
+
+  --blue: #1f5eff;
 }
 
 body {
   margin: 0;
-  background-color: var(--bg);
-  color: var(--text);
+  background-color: var(--dark_100);
+  color: var(--white);
   font-family: 'Open Sans', sans-serif;
   font-size: 16px;
   line-height: 1.5;

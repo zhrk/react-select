@@ -26,11 +26,10 @@ const Select = (props: Props) => {
     <div className={styles.container}>
       <div className={styles.input}>
         <input {...inputProps} />
-        <button type="button" onClick={clearValue}>
-          x
+        <button type="button" onClick={clearValue} className={styles.clearValue}>
+          &#10005;
         </button>
       </div>
-      {isLoading && 'Loading...'}
       {visible && (
         <div className={styles.options} {...optionsProps}>
           {options.map((option) => (
@@ -38,11 +37,13 @@ const Select = (props: Props) => {
               key={option.value}
               type="button"
               onClick={() => selectOption(option)}
+              className={styles.option}
               {...optionProps}
             >
               {option.label}
             </button>
           ))}
+          {isLoading && 'Loading...'}
         </div>
       )}
     </div>

@@ -26,7 +26,7 @@ const MultiSelect = (props: Props) => {
     <div className={styles.container}>
       <div className={styles.input}>
         <input {...inputProps} />
-        <button type="button" onClick={clearValue}>
+        <button type="button" onClick={clearValue} className={styles.clearValue}>
           x
         </button>
       </div>
@@ -38,6 +38,7 @@ const MultiSelect = (props: Props) => {
               key={option.value}
               type="button"
               onClick={() => selectOption(option)}
+              className={styles.option}
               {...optionProps}
             >
               {option.label}
