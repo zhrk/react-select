@@ -90,4 +90,8 @@
   &:hover {
     background-color: var(--dark_100);
   }
+
+  &:focus {
+    background-color: var(--black);
+  }
 }
