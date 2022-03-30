@@ -23,25 +23,34 @@
 }
 
 .input {
+  position: relative;
   display: flex;
-  border: 1px solid var(--black);
-  border-radius: 6px;
 
   & > input {
     padding: 0;
     width: 100%;
     height: 40px;
-    border: none;
-    border-top-left-radius: 6px;
-    border-bottom-left-radius: 6px;
+    border: 1px solid var(--black);
+    box-sizing: border-box;
     background-color: var(--dark_200);
+    border-radius: 6px;
+    transition: all 0.2s ease-in-out;
     outline: none;
+
+    &:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 4px var(--blue);
+    }
   }
 }
 
 .clearValue {
   @include button;
 
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  bottom: 1px;
   width: 32px;
   display: flex;
   justify-content: center;
