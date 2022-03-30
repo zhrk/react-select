@@ -29,7 +29,7 @@ const MultiSelect = (props: Props) => {
       <div className={styles.input}>
         <input {...inputProps} />
         <button type="button" onClick={clearValue} className={styles.clearValue}>
-          x
+          &#10005;
         </button>
       </div>
       {visible && (
