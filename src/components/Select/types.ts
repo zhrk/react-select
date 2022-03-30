@@ -11,3 +11,5 @@ export type OnChange = (value: Value) => void;
 export type OnMultiChange = (value: Options | []) => void;
 
 export type GetOptions = (meta: Meta) => Promise<Options>;
+
+export type Creating = boolean;

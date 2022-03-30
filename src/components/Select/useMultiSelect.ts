@@ -15,7 +15,9 @@ const useMultiSelect = (config: Config) => {
 
   const selectProps = useSelectCommon({ getOptions, options });
 
-  const { clearSearch } = selectProps;
+  const { inputProps, hideOptions, clearSearch } = selectProps;
+
+  const { value: inputValue } = inputProps;
 
   useEffect(() => {
     if (onChange) {
@@ -35,6 +37,12 @@ const useMultiSelect = (config: Config) => {
     clearSearch();
   };
 
+  const createOption = () => {
+    setValue((prev) => [...prev, { value: inputValue, label: inputValue }]);
+    hideOptions();
+    clearSearch();
+  };
+
   const clearValue = () => {
     setValue([]);
     clearSearch();
@@ -43,6 +51,7 @@ const useMultiSelect = (config: Config) => {
   return {
     clearValue,
     selectOption,
+    createOption,
     ...selectProps,
   };
 };

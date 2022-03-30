@@ -1,20 +1,22 @@
 import styles from './styles.module.scss';
-import { Options, OnChange, GetOptions } from './types';
+import { Options, OnChange, GetOptions, Creating } from './types';
 import useSelect from './useSelect';
 
 interface Props {
   options?: Options;
+  creating?: Creating;
   onChange?: OnChange;
   getOptions?: GetOptions;
 }
 
 const Select = (props: Props) => {
-  const { ...config } = props;
+  const { creating, ...config } = props;
 
   const {
     options,
     visible,
     selectOption,
+    createOption,
     clearValue,
     inputProps,
     optionProps,
@@ -36,14 +38,19 @@ const Select = (props: Props) => {
             <button
               key={option.value}
               type="button"
-              onClick={() => selectOption(option)}
               className={styles.option}
+              onClick={() => selectOption(option)}
               {...optionProps}
             >
               {option.label}
             </button>
           ))}
           {isLoading && 'Loading...'}
+          {creating && !options.length && (
+            <button type="button" className={styles.create} onClick={() => createOption()}>
+              Create
+            </button>
+          )}
         </div>
       )}
     </div>

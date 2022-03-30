@@ -95,3 +95,12 @@
     background-color: var(--black);
   }
 }
+
+.create {
+  @include button;
+
+  min-height: 32px;
+  background-color: var(--blue);
+  border-radius: 6px;
+  text-align: center;
+}
