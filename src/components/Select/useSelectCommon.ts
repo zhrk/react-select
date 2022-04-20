@@ -1,20 +1,20 @@
-import { matchSorter } from 'match-sorter';
 import { useState, useEffect, useRef } from 'react';
+import { matchSorter } from 'match-sorter';
+import {
+  offset,
+  useClick,
+  useFocus,
+  autoUpdate,
+  useDismiss,
+  useFloating,
+  autoPlacement,
+  useInteractions,
+  useListNavigation,
+} from '@floating-ui/react-dom-interactions';
 import { Options, GetOptions } from './types';
 
-const isButtonElement = (element: unknown): element is HTMLButtonElement => {
-  if (element instanceof HTMLButtonElement) return true;
-
-  return false;
-};
-
-const isButtonElements = (elements: unknown): elements is Array<HTMLButtonElement> => {
-  if (elements instanceof HTMLCollection) {
-    if (Array.from(elements).every((element) => element instanceof HTMLButtonElement)) return true;
-  }
-
-  return false;
-};
+const OPTIONS_OFFSET = 4;
+const OPTIONS_GAP = 4;
 
 interface Config {
   options?: Options;
@@ -55,51 +55,54 @@ const useSelectCommon = (config: Config) => {
     if (getOptions && !visible) setOptions([]);
   }, [visible, getOptions]);
 
-  const getOptionsElements = () => {
-    const element = ref.current;
+  const { x, y, refs, strategy, context, reference, floating, update } = useFloating({
+    open: visible,
+    onOpenChange: setVisible,
+    middleware: [
+      offset({ mainAxis: OPTIONS_OFFSET }),
+      autoPlacement({ allowedPlacements: ['bottom', 'top'] }),
+    ],
+  });
 
-    if (element && isButtonElements(element.children)) {
-      const elements = Array.from(element.children);
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
-      const firstElement = elements[0];
-      const lastElement = elements[elements.length - 1];
-      const focusedElement = document.activeElement;
+  const listRef = useRef<Array<HTMLButtonElement | null>>([]);
 
-      const prevOption = focusedElement?.previousSibling;
-      const nextOption = focusedElement?.nextSibling;
+  const { getReferenceProps, getFloatingProps } = useInteractions([
+    useClick(context, { toggle: false }),
+    useFocus(context, { keyboardOnly: true }),
+    useDismiss(context),
+    useListNavigation(context, { activeIndex, listRef, onNavigate: setActiveIndex }),
+  ]);
 
-      if (isButtonElement(prevOption) && isButtonElement(nextOption)) {
-        return { firstElement, lastElement, prevOption, nextOption };
-      }
+  useEffect(() => {
+    const floatingElement = refs.floating.current;
 
-      if (isButtonElement(prevOption)) {
-        return { firstElement, lastElement, prevOption };
-      }
+    if (visible && floatingElement && activeIndex !== null) {
+      const listItem = listRef.current[activeIndex];
+      const floatingHeight = floatingElement.offsetHeight;
 
-      if (isButtonElement(nextOption)) {
-        return { firstElement, lastElement, nextOption };
+      if (listItem) {
+        const { offsetTop, offsetHeight } = listItem;
+
+        const listItemOffsetTop = offsetTop + offsetHeight;
+
+        if (listItemOffsetTop > floatingHeight + floatingElement.scrollTop) {
+          floatingElement.scrollTop = listItemOffsetTop - floatingHeight + OPTIONS_GAP;
+        } else if (offsetTop < floatingElement.scrollTop) {
+          floatingElement.scrollTop = offsetTop - OPTIONS_GAP;
+        }
       }
     }
+  }, [visible, activeIndex, refs.floating]);
 
-    return {};
-  };
-
-  const handleOptionKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    const { firstElement, lastElement, prevOption, nextOption } = getOptionsElements();
-
-    if (event.key === 'ArrowUp') prevOption?.focus();
-    if (event.key === 'ArrowDown') nextOption?.focus();
-    if (event.key === 'Home') firstElement?.focus();
-    if (event.key === 'End') lastElement?.focus();
-  };
-
-  const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    const { firstElement } = getOptionsElements();
-
-    if (event.key === 'ArrowDown') {
-      firstElement?.focus();
+  useEffect(() => {
+    if (visible && refs.reference.current && refs.floating.current) {
+      return autoUpdate(refs.reference.current, refs.floating.current, update);
     }
-  };
+
+    return () => undefined;
+  }, [visible, refs.reference, refs.floating, update]);
 
   const handleScroll = () => {
     if (ref.current) {
@@ -118,25 +121,23 @@ const useSelectCommon = (config: Config) => {
       ref,
       role: 'listbox',
       tabIndex: -1,
-      onKeyDown: handleOptionKeyDown,
       onScroll: handleScroll,
+      ...getFloatingProps({
+        ref: floating,
+        style: { position: strategy, left: x ?? '', top: y ?? '' },
+      }),
     },
-    optionProps: {
+    getOptionProps: ({ index }: { index: number }) => ({
       role: 'option',
-      'aria-selected': false,
-      onFocus: (event: React.FocusEvent<HTMLButtonElement>) => {
-        event.target.ariaSelected = 'true';
+      ref: (node: HTMLButtonElement | null) => {
+        listRef.current[index] = node;
       },
-      onBlur: (event: React.FocusEvent<HTMLButtonElement>) => {
-        event.target.ariaSelected = 'false';
-      },
-    },
+    }),
     inputProps: {
       type: 'text',
       value: search,
       onChange: (event: React.ChangeEvent<HTMLInputElement>) => setSearch(event.target.value),
-      onFocus: () => setVisible(true),
-      onKeyDown: handleInputKeyDown,
+      ...getReferenceProps({ ref: reference }),
     },
     visible,
     isLoading,

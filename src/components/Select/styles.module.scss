@@ -18,6 +18,7 @@
 }
 
 .container {
+  position: relative;
   display: flex;
   flex-direction: column;
 }
@@ -38,7 +39,7 @@
     transition: all 0.2s ease-in-out;
     outline: none;
 
-    &:focus {
+    &:focus-visible {
       border-color: var(--blue);
       box-shadow: 0 0 4px var(--blue);
     }
@@ -70,12 +71,16 @@
   &:active {
     background-color: var(--black);
   }
+
+  &:focus-visible {
+    background-color: var(--black);
+  }
 }
 
 .options {
   @include scrollbar;
 
-  margin-top: 8px;
+  width: 100%;
   padding: 8px;
   max-height: 200px;
   display: flex;
@@ -101,7 +106,7 @@
     background-color: var(--dark_100);
   }
 
-  &:focus {
+  &:focus-visible {
     background-color: var(--black);
   }
 }

@@ -19,7 +19,7 @@ const Select = (props: Props) => {
     createOption,
     clearValue,
     inputProps,
-    optionProps,
+    getOptionProps,
     optionsProps,
     isLoading,
   } = useSelect(config);
@@ -34,13 +34,13 @@ const Select = (props: Props) => {
       </div>
       {visible && (
         <div className={styles.options} {...optionsProps}>
-          {options.map((option) => (
+          {options.map((option, index) => (
             <button
               key={option.value}
               type="button"
               className={styles.option}
               onClick={() => selectOption(option)}
-              {...optionProps}
+              {...getOptionProps({ index })}
             >
               {option.label}
             </button>
