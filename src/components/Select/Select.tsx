@@ -13,6 +13,7 @@ const Select = (props: Props) => {
   const { creating, ...config } = props;
 
   const {
+    value,
     options,
     visible,
     selectOption,
@@ -40,7 +41,7 @@ const Select = (props: Props) => {
               type="button"
               className={styles.option}
               onClick={() => selectOption(option)}
-              {...getOptionProps({ index })}
+              {...getOptionProps({ index, selected: option.value === value?.value })}
             >
               {option.label}
             </button>

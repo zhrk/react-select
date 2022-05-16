@@ -109,6 +109,10 @@
   &:focus-visible {
     background-color: var(--black);
   }
+
+  &[aria-selected='true'] {
+    background-color: var(--black);
+  }
 }
 
 .create {

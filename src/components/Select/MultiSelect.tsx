@@ -13,6 +13,7 @@ const MultiSelect = (props: Props) => {
   const { creating, ...config } = props;
 
   const {
+    values,
     options,
     visible,
     selectOption,
@@ -40,7 +41,10 @@ const MultiSelect = (props: Props) => {
               type="button"
               className={styles.option}
               onClick={() => selectOption(option)}
-              {...getOptionProps({ index })}
+              {...getOptionProps({
+                index,
+                selected: values.map((item) => item.value).includes(option.value),
+              })}
             >
               {option.label}
             </button>

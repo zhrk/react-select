@@ -49,6 +49,7 @@ const useMultiSelect = (config: Config) => {
   };
 
   return {
+    values,
     clearValue,
     selectOption,
     createOption,

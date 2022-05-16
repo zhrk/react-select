@@ -13,7 +13,11 @@ const useSelect = (config: Config) => {
 
   const [value, setValue] = useState<Value>(null);
 
-  const selectProps = useSelectCommon({ getOptions, options });
+  const selectProps = useSelectCommon({
+    getOptions,
+    options,
+    activeIndex: (opts) => opts?.findIndex((item) => item.value === value?.value),
+  });
 
   const { inputProps, hideOptions, clearSearch } = selectProps;
 
@@ -43,6 +47,7 @@ const useSelect = (config: Config) => {
   };
 
   return {
+    value,
     clearValue,
     selectOption,
     createOption,
