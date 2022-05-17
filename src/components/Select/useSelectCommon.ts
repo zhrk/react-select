@@ -86,7 +86,7 @@ const useSelectCommon = (config: Config) => {
   ]);
 
   useEffect(() => {
-    if (activeIndex) {
+    if (activeIndex !== null) {
       listRef.current[activeIndex]?.scrollIntoView({ block: 'nearest' });
     }
   }, [activeIndex]);
