@@ -30,22 +30,26 @@ const Select = (props: Props) => {
       <div className={styles.input}>
         <input {...inputProps} />
         <button type="button" onClick={clearValue} className={styles.clearValue}>
-          &#10005;
+          ✖
         </button>
       </div>
       {visible && (
         <div className={styles.options} {...optionsProps}>
-          {options.map((option, index) => (
-            <button
-              key={option.value}
-              type="button"
-              className={styles.option}
-              onClick={() => selectOption(option)}
-              {...getOptionProps({ index, selected: option.value === value?.value })}
-            >
-              {option.label}
-            </button>
-          ))}
+          {options.map((option, index) => {
+            const selected = option.value === value?.value;
+
+            return (
+              <button
+                key={option.value}
+                type="button"
+                className={styles.option}
+                {...getOptionProps({ index, onClick: () => selectOption(option) })}
+              >
+                {option.label}
+                {selected && <span>✔</span>}
+              </button>
+            );
+          })}
           {isLoading && 'Loading...'}
           {creating && !options.length && (
             <button type="button" className={styles.create} onClick={() => createOption()}>

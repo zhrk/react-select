@@ -13,7 +13,6 @@ const MultiSelect = (props: Props) => {
   const { creating, ...config } = props;
 
   const {
-    values,
     options,
     visible,
     selectOption,
@@ -30,7 +29,7 @@ const MultiSelect = (props: Props) => {
       <div className={styles.input}>
         <input {...inputProps} />
         <button type="button" onClick={clearValue} className={styles.clearValue}>
-          &#10005;
+          ✖
         </button>
       </div>
       {visible && (
@@ -41,10 +40,7 @@ const MultiSelect = (props: Props) => {
               type="button"
               className={styles.option}
               onClick={() => selectOption(option)}
-              {...getOptionProps({
-                index,
-                selected: values.map((item) => item.value).includes(option.value),
-              })}
+              {...getOptionProps({ index })}
             >
               {option.label}
             </button>

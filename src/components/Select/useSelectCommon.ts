@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { matchSorter } from 'match-sorter';
 import {
   offset,
@@ -10,7 +10,6 @@ import {
   autoPlacement,
   useInteractions,
   useListNavigation,
-  useTypeahead,
   useRole,
 } from '@floating-ui/react-dom-interactions';
 import { Options, GetOptions } from './types';
@@ -34,7 +33,7 @@ const useSelectCommon = (config: Config) => {
 
   const [scrollToBottomCount, setScrollToBottomCount] = useState(0);
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(!!getOptions);
 
   const ref = useRef<HTMLDivElement>(null);
 
@@ -58,9 +57,10 @@ const useSelectCommon = (config: Config) => {
     if (getOptions && !visible) setOptions([]);
   }, [visible, getOptions]);
 
-  const { x, y, refs, strategy, context, reference, floating, update } = useFloating({
+  const { x, y, strategy, context, reference, floating } = useFloating({
     open: visible,
     onOpenChange: setVisible,
+    whileElementsMounted: autoUpdate,
     middleware: [
       offset({ mainAxis: OPTIONS_OFFSET }),
       autoPlacement({ allowedPlacements: ['bottom', 'top'] }),
@@ -71,37 +71,25 @@ const useSelectCommon = (config: Config) => {
 
   const listRef = useRef<Array<HTMLElement | null>>([]);
 
-  const { getReferenceProps, getFloatingProps /* getItemProps */ } = useInteractions([
-    /* useRole(context, { role: 'listbox' }), */
+  const { getReferenceProps, getFloatingProps, getItemProps } = useInteractions([
+    useRole(context, { role: 'listbox' }),
     useClick(context, { toggle: false }),
     useFocus(context, { keyboardOnly: true }),
     useDismiss(context),
     useListNavigation(context, {
-      activeIndex,
       listRef,
-      onNavigate: setActiveIndex,
-      selectedIndex: config.activeIndex ? config.activeIndex(options) : null,
       virtual: true,
+      focusItemOnHover: false,
+      activeIndex: config.activeIndex ? config.activeIndex(options) : null,
+      onNavigate: setActiveIndex,
     }),
   ]);
 
-  useLayoutEffect(() => {
-    const animationFrame = requestAnimationFrame(() => {
-      if (activeIndex) {
-        listRef.current[activeIndex]?.scrollIntoView({ block: 'nearest' });
-      }
-    });
-
-    return () => cancelAnimationFrame(animationFrame);
-  }, [activeIndex]);
-
   useEffect(() => {
-    if (visible && refs.reference.current && refs.floating.current) {
-      return autoUpdate(refs.reference.current, refs.floating.current, update);
+    if (activeIndex) {
+      listRef.current[activeIndex]?.scrollIntoView({ block: 'nearest' });
     }
-
-    return () => undefined;
-  }, [visible, refs.reference, refs.floating, update]);
+  }, [activeIndex]);
 
   const handleScroll = () => {
     if (ref.current) {
@@ -118,7 +106,7 @@ const useSelectCommon = (config: Config) => {
     options: getOptions ? options : matchSorter(options, search, { keys: ['label'] }),
     optionsProps: {
       ref,
-      role: 'listbox',
+      /* role: 'listbox', */
       tabIndex: -1,
       onScroll: handleScroll,
       ...getFloatingProps({
@@ -126,13 +114,15 @@ const useSelectCommon = (config: Config) => {
         style: { position: strategy, left: x ?? '', top: y ?? '' },
       }),
     },
-    getOptionProps: ({ index, selected }: { index: number; selected: boolean }) => ({
-      role: 'option',
-      'aria-selected': selected || index === activeIndex,
-      ref: (node: HTMLButtonElement | null) => {
-        listRef.current[index] = node;
-      },
-    }),
+    getOptionProps: ({ index, onClick }: { index: number; onClick?: () => void }) =>
+      getItemProps({
+        /* role: 'option', */
+        ref: (node: HTMLButtonElement | null) => {
+          listRef.current[index] = node;
+        },
+        onClick,
+        'aria-selected': index === activeIndex,
+      }),
     inputProps: {
       type: 'text',
       value: search,

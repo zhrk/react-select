@@ -45,7 +45,7 @@ const SelectExample = () => {
       <div className={styles.select}>
         {fruit && <div className={styles.value}>{`Selected fruit: ${fruit.label}`}</div>}
         <Select
-          getOptions={async ({ search, scrollToBottomCount }) => {
+          /* getOptions={async ({ search, scrollToBottomCount }) => {
             const response = await loadUsers({
               _page: String(scrollToBottomCount + 1),
               _limit: String(50),
@@ -55,8 +55,8 @@ const SelectExample = () => {
             const users = response.data.map((item) => ({ value: item.id, label: item.email }));
 
             return users;
-          }}
-          /* options={options} */
+          }} */
+          options={options}
           onChange={(value) => setFruit(value)}
         />
       </div>
