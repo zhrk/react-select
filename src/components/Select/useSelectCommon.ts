@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { matchSorter } from 'match-sorter';
 import {
   offset,
+  useRole,
   useClick,
   useFocus,
   autoUpdate,
@@ -10,7 +11,6 @@ import {
   autoPlacement,
   useInteractions,
   useListNavigation,
-  useRole,
 } from '@floating-ui/react-dom-interactions';
 import { Options, GetOptions } from './types';
 
@@ -19,7 +19,7 @@ const OPTIONS_OFFSET = 4;
 interface Config {
   options?: Options;
   getOptions?: GetOptions;
-  activeIndex?: (options: Options) => number;
+  selectedIndex?: (options: Options) => number;
 }
 
 const useSelectCommon = (config: Config) => {
@@ -69,6 +69,8 @@ const useSelectCommon = (config: Config) => {
 
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
+  const selectedIndex = config.selectedIndex ? config.selectedIndex(options) : null;
+
   const listRef = useRef<Array<HTMLElement | null>>([]);
 
   const { getReferenceProps, getFloatingProps, getItemProps } = useInteractions([
@@ -77,10 +79,12 @@ const useSelectCommon = (config: Config) => {
     useFocus(context, { keyboardOnly: true }),
     useDismiss(context),
     useListNavigation(context, {
+      enabled: visible,
       listRef,
       virtual: true,
       focusItemOnHover: false,
-      activeIndex: config.activeIndex ? config.activeIndex(options) : null,
+      activeIndex,
+      selectedIndex,
       onNavigate: setActiveIndex,
     }),
   ]);
@@ -90,6 +94,14 @@ const useSelectCommon = (config: Config) => {
       listRef.current[activeIndex]?.scrollIntoView({ block: 'nearest' });
     }
   }, [activeIndex]);
+
+  useEffect(() => {
+    listRef.current.forEach((item, index) => {
+      if (selectedIndex === index) {
+        item?.scrollIntoView({ block: 'center' });
+      }
+    });
+  }, [selectedIndex]);
 
   const handleScroll = () => {
     if (ref.current) {
@@ -102,10 +114,18 @@ const useSelectCommon = (config: Config) => {
     }
   };
 
+  const getReturnedOptions = () => {
+    if (getOptions) return options;
+
+    if (search) return matchSorter(options, search, { keys: ['label'] });
+
+    return options;
+  };
+
   return {
-    options: getOptions ? options : matchSorter(options, search, { keys: ['label'] }),
+    options: getReturnedOptions(),
     optionsProps: {
-      ref,
+      ref, // скорее всего перезаписано
       /* role: 'listbox', */
       tabIndex: -1,
       onScroll: handleScroll,

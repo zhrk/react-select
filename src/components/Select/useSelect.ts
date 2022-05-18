@@ -16,7 +16,7 @@ const useSelect = (config: Config) => {
   const selectProps = useSelectCommon({
     getOptions,
     options,
-    activeIndex: (opts) => opts?.findIndex((item) => item.value === value?.value),
+    selectedIndex: (opts) => opts?.findIndex((item) => item.value === value?.value),
   });
 
   const { inputProps, hideOptions, clearSearch } = selectProps;
