@@ -34,20 +34,17 @@ const Select = (props: Props) => {
         </button>
       </div>
       {visible && (
-        <div className={styles.options} {...optionsProps}>
+        <ul className={styles.options} {...optionsProps}>
           {options.map((option, index) => {
             const selected = option.value === value?.value;
 
             return (
-              <button
-                key={option.value}
-                type="button"
-                className={styles.option}
-                {...getOptionProps({ index, onClick: () => selectOption(option) })}
-              >
-                {option.label}
-                {selected && <span>✔</span>}
-              </button>
+              <li key={option.value} className={styles.option} {...getOptionProps({ index })}>
+                <button type="button" onClick={() => selectOption(option)}>
+                  {option.label}
+                  {selected && <span>✔</span>}
+                </button>
+              </li>
             );
           })}
           {isLoading && 'Loading...'}
@@ -56,7 +53,7 @@ const Select = (props: Props) => {
               Create
             </button>
           )}
-        </div>
+        </ul>
       )}
     </div>
   );

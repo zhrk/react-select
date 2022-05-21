@@ -137,28 +137,23 @@ const useSelectCommon = (config: Config) => {
   return {
     options: getReturnedOptions(),
     optionsProps: getFloatingProps({
-      /* role: 'listbox', */
       ref: floating,
       style: { position: strategy, left: x ?? '', top: y ?? '' },
       onScroll: handleScroll,
     }),
-    getOptionProps: ({ index, onClick }: { index: number; onClick?: () => void }) =>
+    getOptionProps: ({ index }: { index: number }) =>
       getItemProps({
-        /* role: 'option', */
+        role: 'option',
+        'aria-selected': index === activeIndex,
         ref: (node: HTMLButtonElement | null) => {
           listRef.current[index] = node;
         },
-        onClick: () => {
-          if (onClick) onClick();
-
-          setSelectedIndex(index);
-        },
-        'aria-selected': index === activeIndex,
+        onClick: () => setSelectedIndex(index),
       }),
     inputProps: {
       type: 'text',
       value: search,
-      /* 'aria-autocomplete': 'list', */
+      'aria-autocomplete': 'list',
       onChange: (event: React.ChangeEvent<HTMLInputElement>) => setSearch(event.target.value),
       ...getReferenceProps({ ref: reference }),
     },

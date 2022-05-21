@@ -95,12 +95,6 @@
 }
 
 .option {
-  @include button;
-
-  padding: 4px 8px;
-  display: flex;
-  justify-content: space-between;
-  box-sizing: border-box;
   border-radius: 6px;
   transition: all 0.2s ease-in-out;
 
@@ -114,6 +108,16 @@
 
   &[aria-selected='true'] {
     background-color: var(--black);
+  }
+
+  & > button {
+    @include button;
+
+    width: 100%;
+    padding: 4px 8px;
+    display: flex;
+    justify-content: space-between;
+    box-sizing: border-box;
   }
 }
 
