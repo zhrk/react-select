@@ -35,8 +35,6 @@ const useSelectCommon = (config: Config) => {
 
   const [isLoading, setIsLoading] = useState(!!getOptions);
 
-  const ref = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     const onEffect = async () => {
       if (visible && getOptions) {
@@ -57,7 +55,11 @@ const useSelectCommon = (config: Config) => {
     if (getOptions && !visible) setOptions([]);
   }, [visible, getOptions]);
 
-  const { x, y, strategy, context, reference, floating } = useFloating({
+  useEffect(() => {
+    if (!visible) setScrollToBottomCount(0);
+  }, [visible]);
+
+  const { x, y, strategy, context, refs, reference, floating } = useFloating({
     open: visible,
     onOpenChange: setVisible,
     whileElementsMounted: autoUpdate,
@@ -69,7 +71,15 @@ const useSelectCommon = (config: Config) => {
 
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
-  const selectedIndex = config.selectedIndex ? config.selectedIndex(options) : null;
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    setSelectedIndex((prev) => {
+      if (config.selectedIndex) return prev === null ? config.selectedIndex(options) : prev;
+
+      return prev;
+    });
+  }, [config, options]);
 
   const listRef = useRef<Array<HTMLElement | null>>([]);
 
@@ -97,16 +107,18 @@ const useSelectCommon = (config: Config) => {
 
   useEffect(() => {
     listRef.current.forEach((item, index) => {
-      if (selectedIndex === index) {
+      if (selectedIndex === index && scrollToBottomCount === 0) {
         item?.scrollIntoView({ block: 'center' });
       }
     });
-  }, [selectedIndex]);
+  }, [selectedIndex, isLoading, scrollToBottomCount]);
 
   const handleScroll = () => {
-    if (ref.current) {
-      const curr = ref.current.scrollTop + ref.current.clientHeight;
-      const height = ref.current.scrollHeight;
+    const floatingRef = refs.floating.current;
+
+    if (floatingRef) {
+      const curr = floatingRef.scrollTop + floatingRef.clientHeight;
+      const height = floatingRef.scrollHeight;
 
       if (curr === height) {
         setScrollToBottomCount((prev) => prev + 1);
@@ -124,23 +136,23 @@ const useSelectCommon = (config: Config) => {
 
   return {
     options: getReturnedOptions(),
-    optionsProps: {
-      ref, // скорее всего перезаписано
+    optionsProps: getFloatingProps({
       /* role: 'listbox', */
-      tabIndex: -1,
+      ref: floating,
+      style: { position: strategy, left: x ?? '', top: y ?? '' },
       onScroll: handleScroll,
-      ...getFloatingProps({
-        ref: floating,
-        style: { position: strategy, left: x ?? '', top: y ?? '' },
-      }),
-    },
+    }),
     getOptionProps: ({ index, onClick }: { index: number; onClick?: () => void }) =>
       getItemProps({
         /* role: 'option', */
         ref: (node: HTMLButtonElement | null) => {
           listRef.current[index] = node;
         },
-        onClick,
+        onClick: () => {
+          if (onClick) onClick();
+
+          setSelectedIndex(index);
+        },
         'aria-selected': index === activeIndex,
       }),
     inputProps: {
